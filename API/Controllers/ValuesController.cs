@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     [ApiController]
     public class ValuesController : ControllerBase
     {
@@ -18,13 +18,6 @@ namespace API.Controllers
             this.context = context;
         }
 
-        // GET api/values
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Value>>> Get()
-        {
-            var values = await context.Values.ToListAsync();
-            return Ok(values);
-        }
 
         // GET api/values/5
         [HttpGet("{id}")]

@@ -1,44 +1,23 @@
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using Persistence;
-using System;
+var builder = WebApplication.CreateBuilder(args);
 
-namespace API
+builder.Services.AddControllers();
+
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
+var app = builder.Build();
+
+if (app.Environment.IsDevelopment())
 {
-    public class Program
-    {
-        public static void Main(string[] args)
+    app.UseSwagger();
+    app.UseSwaggerUI(c =>
         {
-            var host = CreateHostBuilder(args).Build();
-
-            using (var scope = host.Services.CreateScope())
-            {
-                var services = scope.ServiceProvider;
-
-                try
-                {
-                    var context = services.GetRequiredService<DataContext>();
-                    context.Database.Migrate();
-                    Seed.SeedData(context);
-                }
-                catch(Exception ex)
-                {
-                    var logger = services.GetRequiredService<ILogger<Program>>();
-                    logger.LogError(ex, "An error occured during migration");
-                }
-            }
-
-            host.Run();
-        }
-
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
-                    webBuilder.UseStartup<Startup>();
-                });
-    }
+            c.SwaggerEndpoint("v1/swagger.json", "My API V1");
+        });
 }
+
+app.UseAuthorization();
+
+app.MapControllers();
+
+app.Run();
