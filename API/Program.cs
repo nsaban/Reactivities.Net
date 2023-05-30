@@ -11,10 +11,17 @@ builder.Services.AddDbContext<DataContext>(opt =>
 {
     opt.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
+builder.Services.AddCors(opt => 
+{
+    opt.AddPolicy("CorsPolicy", policy => {
+        policy.AllowAnyMethod().AllowAnyHeader().WithOrigins("http://localhost:3000");
+    });
+});
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
+
+if (builder.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI(c =>
@@ -22,6 +29,8 @@ if (app.Environment.IsDevelopment())
             c.SwaggerEndpoint("v1/swagger.json", "My API V1");
         });
 }
+
+app.UseCors("CorsPolicy");
 
 app.UseAuthorization();
 
