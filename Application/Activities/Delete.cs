@@ -1,8 +1,5 @@
 ﻿using MediatR;
 using Persistence;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Application.Activities
 {
@@ -15,28 +12,23 @@ namespace Application.Activities
 
         public class Handler : IRequestHandler<Command>
         {
-            private readonly DataContext DataContext;
+            private readonly DataContext _context;
 
             public Handler(DataContext context)
             {
-                this.DataContext = context;
+                _context = context;
             }
 
             public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
-                var activity = await DataContext.Activities.FindAsync(request.Id);
+                var activity = await _context.Activities.FindAsync(request.Id);
 
-                if (activity == null)
-                    throw new Exception("Could not find activity");
+                _context.Remove(activity);
 
-                DataContext.Remove(activity);
+                await _context.SaveChangesAsync();
                 
-                var success = await DataContext.SaveChangesAsync() > 0;
+                 return Unit.Value;
 
-                if (success)
-                    return Unit.Value;
-
-                throw new Exception("Problem saving changes");
             }
         }
     }

@@ -1,6 +1,7 @@
 ﻿using Domain;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Persistence;
 
 namespace Application.Activities
@@ -14,18 +15,16 @@ namespace Application.Activities
 
         public class Handler : IRequestHandler<Query, List<Activity>>
         {
-            public DataContext Context { get; }
+            private readonly DataContext _context;
 
             public Handler(DataContext context)
             {
-                Context = context;
+                _context = context;
             }
 
-            public async Task<List<Activity>> Handle(Query request, CancellationToken cancellationToken)
+            public async Task<List<Activity>> Handle(Query request, CancellationToken ct)
             {
-                var activities = await Context.Activities.ToListAsync();
-
-                return activities;
+                return await _context.Activities.ToListAsync();
             }
         }
     }
