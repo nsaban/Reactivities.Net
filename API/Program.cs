@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Persistence;
 using API.Extensions;
+using API.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,8 +11,9 @@ builder.Services.AddApplicationServices(builder.Configuration);
 
 var app = builder.Build();
 
+app.UseMiddleware<ExceptionMiddleware>();
 
-if (builder.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI(c =>
