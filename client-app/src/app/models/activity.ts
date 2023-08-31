@@ -1,10 +1,10 @@
 export interface Activity {
-    id: string
-    title: string
-    description: string
-    category: string
-    date: string
-    city: string
-    venue: string
+    id: string;
+    title: string;
+    description: string;
+    category: string;
+    date: Date | null;
+    city: string;
+    venue: string;
   }
   
