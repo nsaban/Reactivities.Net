@@ -1,4 +1,5 @@
 import { Activity, ActivityFormValues } from 'app/models/activity';
+import { Photo, Profile } from 'app/models/profile';
 import { User, UserFormValues } from 'app/models/user';
 import { router } from 'app/router/routes';
 import { store } from 'app/stores/store';
@@ -23,8 +24,8 @@ axios.interceptors.response.use(async response => {
     await sleep(1000);
     return response;
 
-},(error: AxiosError) => {
-    const {data, status, config} = error.response as AxiosResponse;
+}, (error: AxiosError) => {
+    const { data, status, config } = error.response as AxiosResponse;
 
     switch (status) {
         case 400:
@@ -86,9 +87,23 @@ const Account = {
     register: (user: UserFormValues) => requests.post<User>('/account/register', user)
 }
 
+const Profiles = {
+    get: (username: string) => requests.get<Profile>(`/profiles/${username}`),
+    uploadPhoto: (file: Blob) => {
+        let formData = new FormData();
+        formData.append('File', file);
+        return axios.post<Photo>('photos', formData, {
+            headers: { 'Content-type': 'multipart/form-data' }
+        });
+    },
+    setMainPhoto: (id: string) => requests.post(`/photos/${id}/setMain`, {}),
+    deletePhoto: (id: string) => requests.del(`/photos/${id}`)
+}
+
 const agent = {
     Activities,
-    Account
+    Account,
+    Profiles
 }
 
 export default agent;
